@@ -17,32 +17,46 @@
 import webapp2
 import urllib
 
-class MainPage(webapp2.RequestHandler):
-  def get(self):
-    self.response.out.write('<html><head>')
-	self.reponse.out.write("""<link rel="stylesheet" href="assets/style.css"/>
-		<script src="assets/script.js"></script>
-		<script type="text/javascript">
+import logging, os
 
-			  var _gaq = _gaq || [];
-			  _gaq.push(['_setAccount', 'UA-39127932-1']);
-			  _gaq.push(['_trackPageview']);
+# Google App Engine imports.
+from google.appengine.ext.webapp import util
 
-			  (function() {
-				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			  })();
+# Force Django to reload its settings.
+from django.conf import settings
+settings._target = None
 
-		</script>
-		</head>
-		<body>
-		<h1>ROLLCALL</h1>
-		<h2>Dunman High School Attendance Taking App</h2>
-			<p>I like taking attendance</p>
-	</body>
-	</html>""")
-		
+# Must set this env var before importing any part of Django
+# 'project' is the name of the project created with django-admin.py
+os.environ['DJANGO_SETTINGS_MODULE'] = 'project.settings'
+
+import logging
+import django.core.handlers.wsgi
+import django.core.signals
+import django.db
+import django.dispatch.dispatcher
+
+def log_exception(*args, **kwds):
+    logging.exception('Exception in request:')
+
+# Log errors.
+django.dispatch.dispatcher.connect(
+    log_exception, django.core.signals.got_request_exception)
+
+# Unregister the rollback event handler.
+django.dispatch.dispatcher.disconnect(
+    django.db._rollback_on_exception,
+    django.core.signals.got_request_exception)
+
+def main():
+    # Create a Django application for WSGI.
+    application = django.core.handlers.wsgi.WSGIHandler()
+
+    # Run the WSGI CGI handler with that application.
+    util.run_wsgi_app(application)
+
+if __name__ == '__main__':
+    main()		
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
