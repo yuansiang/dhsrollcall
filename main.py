@@ -16,88 +16,116 @@
 #
 import webapp2
 import cgi
-  
+import urllib
+
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
+
 class MainPage(webapp2.RequestHandler):
   def get(self):
-	  self.response.out.write('''
+	upload_url = blobstore.create_upload_url('/upload')
+	self.response.out.write('''
 		<!doctype html>
 	<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>RollCall@DHS</title>
-		 <link rel="stylesheet" href="/static/themes/css/vanilla.css">
-        <script src="/static/src/lib/zepto.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="/static/src/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
-        
+		<head>
+			<meta charset="UTF-8" />
+			<title>RollCall@DHS</title>
+			 <link rel="stylesheet" href="/static/themes/css/vanilla.css">
+			<script src="/static/src/lib/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+			<script src="/static/src/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
+			
 
-        <script src="/static/extensions/jqt.autotitles.min.js" type="application/x-javascript" charset="utf-8"></script>
+			<script src="/static/extensions/jqt.autotitles.min.js" type="application/x-javascript" charset="utf-8"></script>
 
-        <script type="text/javascript" charset="utf-8">
-            var jQT = new $.jQTouch({
-                icon: 'jqtouch.png',
-                addGlossToIcon: false,
-                startupScreen: 'jqt_startup.png',
-                statusBar: 'black'
-            });
-        </script>
-    </head>
-    <body>
-        <div id="jqt">
-            <div id="page1">
-                <div class="toolbar">
-                    <h1>Attendance Taking</h1>
-                </div>
-                <ul class="edgetoedge">
-                    <li><a href="#attendance">Attendance Taking</a></li>
-                    <li><a href="#leaveform">Leave Form</a></li>
-                    <li><a href="#mc">MC Submission</a></li>
-                </ul>
-            </div>
-            <div id="attendance">
-                <div class="toolbar">
-                    <a href="#" class="back">Back</a>
-                    <h1><!-- Will be filled in --></h1>
-                </div>
-                <div class="info">
-                    The title for this page was automatically set from it&#8217;s referring link, no extra scripts required. Just include the extension and this happens.
-                </div>
-            </div>
-			<div id="leaveform">
-                <div class="toolbar">
-                    <a href="#" class="back">Back</a>
-                    <h1><!-- Will be filled in --></h1>
-                </div>
-                <div class="info">
-                    The title for this page was automatically set from it&#8217;s referring link, no extra scripts required. Just include the extension and this happens.
-                </div>
-            </div>
-			<div id="mc">
-                <div class="toolbar">
-                    <a href="#" class="back">Back</a>
-                    <h1><!-- Will be filled in --></h1>
-                </div>
-                <div class="info">
-                     <form method="post" action="%=blobstoreService.createUploadUrl("/upload")%" enctype="multipart/form-data"> 
-						 Description:<br> 
-						 <input type="text" name="form_description" size="40"> 
-						 <input type="hidden" name="MAX_FILE_SIZE" value="1000000"> 
-						 <br>File to upload:<br> 
-						 <input type="file" name="form_data" size="40"> 
-						 <p><input type="submit" name="submit" value="submit"> 
-					 </form> 
-                </div>
-            </div>
-        </div>
-    </body>
-</html>
-	  ''')
+			<script type="text/javascript" charset="utf-8">
+				var jQT = new $.jQTouch({
+					useFastTouch: false,
+					icon: 'jqtouch.png',
+					addGlossToIcon: false,
+					startupScreen: 'jqt_startup.png',
+					statusBar: 'black'
+				});
+			</script>
+		</head>
+		<body>
+			<div id="jqt">
+				<div id="page1">
+					<div class="toolbar">
+						<h1>RollCall</h1>
+					</div>
+					<ul class="edgetoedge">
+						<li><a href="#attendance">Attendance Taking</a></li>
+						<li><a href="#leaveform">Leave Form</a></li>
+						<li><a href="#mc">MC Submission</a></li>
+					</ul>
+				</div>
+				<div id="attendance">
+					<div class="toolbar">
+						<a href="#" class="back">Back</a>
+						<h1><!-- Will be filled in --></h1>
+					</div>
+					<div class="info">
+						The title for this page was automatically set from it&#8217;s referring link, no extra scripts required. Just include the extension and this happens.
+					</div>
+				</div>
+				<div id="leaveform">
+					<div class="toolbar">
+						<a href="#" class="back">Back</a>
+						<h1><!-- Will be filled in --></h1>
+					</div>
+					<div class="info">''')
+	self.response.out.write("""
+              <form action="/leaveform" method="post" class="form">
+				<p>I wish to apply leave from: <input type="date" name="leavefrom"> to <input type="date" name="leaveto">. 
+				(<input type="number" name="numdays"> of days.)</p>
+				<p>Reason For Application:</p>
+				<textarea rows ="4" cols = "50" name = "reason">Enter reason here</textarea>
+				<p>Name of Parent/Guardian: <input type = "text" name ="parentname"></p>
+				<p>Contact: <input type = "number" name="homenum">(Home)</p>
+				<p>Contact: <input type = "number" name = "officenum">(Office)</p>
+				<p>Contact: <input type = "number" name = "handphone">(Handphone)</p>
+				<p>Test(s) missed during leave</p>
+				<textarea rows ="4" cols = "50" name = "testsmissed">Enter in format Subject:Date</textarea>
+				<p>I hereby confirm that all of the above is truthful and accept the consequences were I to falsify or manipulate any information in any way<input type="checkbox" name="confirm" value="yay"></p>
+                <div><input type="submit" name="Submit" value="Submit" onclick="submit()" /></div>
+              </form>
+            </body>
+          </html>""")
+	self.response.out.write('''
+					</div>
+				</div>
+				<div id="mc">
+					<div class="toolbar">
+						<a href="#" class="back">Back</a>
+						<h1><!-- Will be filled in --></h1>
+					</div>
+					<div class="info">
+						 ''')
+	self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data" class="form">' % upload_url)
+	self.response.out.write("""Please upload a copy of your MC in any format!<br/>
+								Note that falsified entries will be dealt with with discplinary action<br/>
+								<input type="file" name="file">
+	
+	<input type="submit" name="Submit" value="Submit" onclick="submit()" /></form>
+			</div>
+				</div>
+			</div>
+		</body>
+	</html>""")
+class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+  def post(self):
+    upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
+    blob_info = upload_files[0]
+    self.redirect('/serve/%s' % blob_info.key())
 
-class About(webapp2.RequestHandler):	  
-	def get(self):
-	  self.response.out.write('''
-	  HGaha
-	  ''')
+class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
+  def get(self, resource):
+    resource = str(urllib.unquote(resource))
+    blob_info = blobstore.BlobInfo.get(resource)
+    self.send_blob(blob_info)
 
 
-app = webapp2.WSGIApplication([('/', MainPage), ('/about', About)],
+app = webapp2.WSGIApplication([('/', MainPage), 
+							   ('/upload', UploadHandler),
+                               ('/serve/([^/]+)?', ServeHandler)],
                               debug=True)
