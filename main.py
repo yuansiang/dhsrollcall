@@ -17,9 +17,21 @@
 import webapp2
 import cgi
 import urllib
+import jinja2
+import os
+import datetime
 
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
+from google.appengine.ext import db
+from google.appengine.api import users
+
+
+class Persons(db.expando):
+	pid = db.StringProperty(required=True)
+	name = db.StringProperty(required=True)
+	user_class = db.StringProperty(required=True)
+	email = db.EmailProperty(required=True)
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
