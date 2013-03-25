@@ -34,6 +34,19 @@ class Persons(db.Expando):
 	user_class = db.StringProperty(required=True)
 	email = db.EmailProperty(required=True)
 
+class LeaveForm(db.Model):
+  leavefrom = db.DateProperty()
+  leaveto = db.DateProperty()
+  numdays = db.IntegerProperty()
+  reason = db.StringProperty(multiline = True)
+  homenum = db.IntegerProperty()
+  officenum = db.IntegerProperty()
+  handphone = db.IntegerProperty()
+  testmissed = db.StringProperty(multiline = True)
+  email = db.StringProperty()
+
+	
+
 class MainPage(webapp2.RequestHandler):
   def get(self):
 	upload_url = blobstore.create_upload_url('/upload')
@@ -44,18 +57,31 @@ class MainPage(webapp2.RequestHandler):
 			<meta charset="UTF-8" />
 			<title>RollCall@DHS</title>
 			 <link rel="stylesheet" href="/static/themes/css/vanilla.css">
+			 <link rel="shortcut icon" href="favicon.ico" />
 			<script src="/static/src/lib/zepto.min.js" type="text/javascript" charset="utf-8"></script>
 			<script src="/static/src/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
-			
+			<script type="text/javascript">
+
+			  var _gaq = _gaq || [];
+			  _gaq.push(['_setAccount', 'UA-39127932-1']);
+			  _gaq.push(['_trackPageview']);
+
+			  (function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			  })();
+
+			</script>
 
 			<script src="/static/extensions/jqt.autotitles.min.js" type="application/x-javascript" charset="utf-8"></script>
 
 			<script type="text/javascript" charset="utf-8">
 				var jQT = new $.jQTouch({
 					useFastTouch: false,
-					icon: 'jqtouch.png',
+					icon: 'favicon.ico',
 					addGlossToIcon: false,
-					startupScreen: 'jqt_startup.png',
+					startupScreen: 'favicon.ico',
 					statusBar: 'black'
 				});
 			</script>
@@ -148,8 +174,8 @@ class MainPage(webapp2.RequestHandler):
 				<p>Contact: <input type = "number" name = "handphone">(Handphone)</p>
 				<p>Test(s) missed during leave</p>
 				<textarea rows ="4" cols = "50" name = "testsmissed">Enter in format Subject:Date</textarea>
-				<p>I hereby confirm that all of the above is truthful and accept the consequences were I to falsify or manipulate any information in any way<input type="checkbox" name="confirm" value="yay"></p>
-                <div><input type="submit" name="Submit" value="Submit" onclick="submit()" /></div>
+				<!---<p>I hereby confirm that all of the above is truthful and accept the consequences were I to falsify or manipulate any information in any way<input type="checkbox" name="confirm" value="yay"></p>--->
+                <div><input type="submit" name="leaveform" value="Submit" onclick="submit()" class="Submitleaveform"/></div>
               </form>
             </body>
           </html>""")
@@ -174,6 +200,39 @@ class MainPage(webapp2.RequestHandler):
 			</div>
 		</body>
 	</html>""")
+	
+class Submitleaveform(webapp2.RequestHandler):
+	def post(self):
+		leaveform = LeaveForm()
+		leavefrom = self.request.get('leavefrom')
+		leaveto = self.request.get('leaveto')
+		numdays = str(self.request.get("numdays"))
+		reason = str(self.request.get('reason'))
+		homenum = str(self.request.get("homenum"))
+		officenum = str(self.request.get("officenum"))
+		handphone = str(self.request.get("handphone"))
+		testmissed = str(self.request.get('testmissed'))
+		email = str(self.request.get('email'))
+		leaveform.put()
+		self.response.out.write("""<html>
+									<head>
+									<title>
+									Success!
+									</title>
+									<script type="text/JavaScript">
+									<!--
+									setTimeout("location.href = '/';",3000);
+									-->
+									</script>
+									</head>
+									<body>
+									<h1>
+									Success!
+									</h1>
+									<h2>Redirecting you to the front page.....</h2>
+									</body>
+									</html>""")
+		
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
   def post(self):
     upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
@@ -189,5 +248,6 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
 app = webapp2.WSGIApplication([('/', MainPage), 
 							   ('/upload', UploadHandler),
+							   ('/leaveform', Submitleaveform),
                                ('/serve/([^/]+)?', ServeHandler)],
                               debug=True)
