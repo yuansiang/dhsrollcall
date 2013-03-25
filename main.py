@@ -20,6 +20,7 @@ import urllib
 import jinja2
 import os
 import datetime
+import wsgiref.handlers
 
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
@@ -27,7 +28,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 
 
-class Persons(db.expando):
+class Persons(db.Expando):
 	pid = db.StringProperty(required=True)
 	name = db.StringProperty(required=True)
 	user_class = db.StringProperty(required=True)
@@ -77,7 +78,56 @@ class MainPage(webapp2.RequestHandler):
 						<h1><!-- Will be filled in --></h1>
 					</div>
 					<div class="info">
-						The title for this page was automatically set from it&#8217;s referring link, no extra scripts required. Just include the extension and this happens.
+						<ul class = "edgetoedge">
+							<li><a href="#13y1a">13Y1A</a></li>
+						</ul>
+					</div>
+				</div>
+				<div id="13y1a">
+					<div class="toolbar">
+						<a href="#" class="back">Back</a>
+						<h1><!-- Will be filled in --></h1>
+					</div>
+					<div class="info">
+						<form class ="form" method ="post" action="13y1a">
+							<p align="right">1 AMANDA ANG XIN RONG <input type = "checkbox" value = "13Y1A1"></p>
+							<p align="right">2 AMIDALA LEE JIEYI<input type = "checkbox" value = "13Y1A2"></p>
+							<p align="right">3 ANG XIN LING ADELLE<input type = "checkbox" value = "13Y1A3"></p>
+							<p align="right">4 CHAN KE QING<input type = "checkbox" value = "13Y1A4"></p>
+							<p align="right">5 CHEN JING<input type = "checkbox" value = "13Y1A5"></p>
+							<p align="right">6 CHEONG JIA YUN BRENDA<input type = "checkbox" value = "13Y1A6"></p>
+							<p align="right">7 CHERYL POH JINGTING<input type = "checkbox" value = "13Y1A7"></p>
+							<p align="right">8 CHIN NGIOK YONG<input type = "checkbox" value = "13Y1A8"></p>
+							<p align="right">9 CHLOE KANG YUN HUI<input type = "checkbox" value = "13Y1A9"></p>
+							<p align="right">10 CHUA JIA RONG<input type = "checkbox" value = "13Y1A10"></p>
+							<p align="right">11 HSU YI-NING<input type = "checkbox" value = "13Y1A11"></p>
+							<p align="right">12 LOH WEN YU<input type = "checkbox" value = "13Y1A12"></p>
+							<p align="right">13 LOW YUAN JIA DANNICA<input type = "checkbox" value = "13Y1A13"></p>
+							<p align="right">14 MAN WAI TING<input type = "checkbox" value = "13Y1A14"></p>
+							<p align="right">15 NG CUI TING CHRISTINE<input type = "checkbox" value = "13Y1A15"></p>
+							<p align="right">16 RACHEL NG MIN YEE<input type = "checkbox" value = "13Y1A16"></p>
+							<p align="right">17 SNG QIWEN<input type = "checkbox" value = "13Y1A17"></p>
+							<p align="right">18 TAN SI JIE<input type = "checkbox" value = "13Y1A18"></p>
+							<p align="right">19 TAN WEI SHUANG<input type = "checkbox" value = "13Y1A19"></p>
+							<p align="right">20 VICTORIA QUEK XIAOXUAN<input type = "checkbox" value = "13Y1A20"></p>
+							<p align="right">21 YANG YUE SHAN<input type = "checkbox" value = "13Y1A21"></p>
+							<p align="right">22 CHUA LIANG WEI COLLIN<input type = "checkbox" value = "13Y1A22"></p>
+							<p align="right">23 DARREN CHEE ZHE LIANG<input type = "checkbox" value = "13Y1A23"></p>
+							<p align="right">24 DEE MU RUI MARCUS<input type = "checkbox" value = "13Y1A24"></p>
+							<p align="right">25 EE ANSHENG<input type = "checkbox" value = "13Y1A25"></p>
+							<p align="right">26 FOONG HAO HAN ISAAC<input type = "checkbox" value = "13Y1A26"></p>
+							<p align="right">27 GAN RUI YI<input type = "checkbox" value = "13Y1A27"></p>
+							<p align="right">28 JEREMY CHAN KWANG JIE<input type = "checkbox" value = "13Y1A28"></p>
+							<p align="right">29 LIU ZIXIN<input type = "checkbox" value = "13Y1A29"></p>
+							<p align="right">30 NG TZE ANN JONATHAN<input type = "checkbox" value = "13Y1A30"></p>
+							<p align="right">31 NIGEL TAN YI CHER<input type = "checkbox" value = "13Y1A31"></p>
+							<p align="right">32 RYAN LIM ZI AN<input type = "checkbox" value = "13Y1A32"></p>
+							<p align="right">33 TAN EE HENG<input type = "checkbox" value = "13Y1A33"></p>
+							<p align="right">34 TAN KAIHENG<input type = "checkbox" value = "13Y1A34"></p>
+							<p align="right">35 TAN ZIYANG HENRY<input type = "checkbox" value = "13Y1A35"></p>
+							<p align="right">36 XAVIER TAN JUN HAN<input type = "checkbox" value = "13Y1A36"></p>
+							<div><input type="submit" name="Submit" value="Submit" onclick="submit()" /></div>
+							</form>
 					</div>
 				</div>
 				<div id="leaveform">
